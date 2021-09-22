@@ -19,35 +19,18 @@ import test, { aspot, predicateIs } from '../components/aspot';
 import { AsoptWrapper, AspotContext } from '../components/aspot/context';
 import useNode from '../components/aspot/useNode';
 import { CountOps, Term } from '../components/aspot/type';
-import { and, countIs, with, is } from '../components/aspot/find';
+import { and, countIs, join, is, where, joinPrev } from '../components/aspot/find';
+import { emptyDatabase, localDb, webSocketDB } from '../components/aspot/db';
 
-const AspotTest = () => {
-  const db = useContext(AspotContext);
-  db.find(is('predicate')('boss'))
-    .groupBy('subject')
-    .having(countIs(">", 3))
-    .degroup()
-    .next(and(with('subject')('subject'), is('predicate')('friend')))
-  const v = useNode(db.node('test').s('name'));
-  const friends = useNode(db.node('test').s('friend').all()) as [];
-  const change = () => { 
-    db.node('test').s('name').is(v4()) 
-    db.node('test').s('friend').s().s('name').is(v4());
-  }
-  console.log(friends);
-  return (
-    <>
-    <div>{v}</div><a onClick={change}>Change me</a>
-    {friends.map(() => <Friend />)}
-    </>
-  )
-}
 const Home: nextpage = () => {
+
   const router = useRouter();
-  const { id } = router.query;
+  const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id;
+  console.log(router.query);
   // test();
-  const db = aspot({sentences:[], date:Date.now()});
-  db.node('test').s('friend').s().s('name').is(v4());
+  // const db = localDb(id || 'defaultMeetng');
+  const db = webSocketDB('ws://localhost:8080');
+  // const db = aspot(emptyDatabase());
   const MeetingBody = id ? Scoring : MeetingSelector
     return (
     <div className="container max-w-2xl mx-auto">
@@ -58,10 +41,6 @@ const Home: nextpage = () => {
       </Head>
 
       <main className="">
-        <AsoptWrapper db={db} >
-          <AspotTest />
-          <AspotTest />
-        </AsoptWrapper>
         <h1 className={styles.title}>
           Rate your Meeting
         </h1>

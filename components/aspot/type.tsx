@@ -1,5 +1,3 @@
-import db from "./db";
-
 export type Sentence = {
 	subject: string,
 	object: string|null,
@@ -20,11 +18,12 @@ export type AspotNode = {
   s: (p?:string) => PredicateNode,
   on: (on:OnFunc) => void,
   val: () => string|PredicateNode[]|null,
+  del: (depth?:number) => void,
+  find: (match:Match) => SentenceResult,
 }
 export type PredicateNode = AspotNode & {
   is: (o:string) => void,
   all: () => SubjectNode,
-  del: () => void,
   predicate: () => string,
 }
 export type SubjectNode = AspotNode & {
@@ -60,6 +59,7 @@ export type NodeProps = {
   find: Find,
   node: (s?:string) => SubjectNode,
   addWatcher: (w:Watcher) => void;
+  reset: (newDb:Database) => void;
 }
 export enum CountOps  {
   equals = "=",

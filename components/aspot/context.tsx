@@ -1,11 +1,12 @@
 import { find } from "lodash";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import db from "./db";
 import { predicateIs } from "./find";
 import { Term } from "./type";
 
 
 const AspotContext = createContext(db({sentences:[], date:Date.now()}));
+const useAspotContext = () => useContext(AspotContext);
 const AsoptWrapper = (props) => {
 	const {db, children} = props;
   return (
@@ -17,4 +18,5 @@ const AsoptWrapper = (props) => {
 export {
   AspotContext,
   AsoptWrapper,
+  useAspotContext,
 }

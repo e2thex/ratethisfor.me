@@ -53,12 +53,11 @@ const matchPartial = (search:Partial<Sentence>) => addMatchMeta((sentence:Senten
   return m;
 });
 const addMatchMeta = (match:MatchFunc):MatchWithMeta => {
-  const matchWMeta = addMatchMeta(match);
   return Object.assign(
     match,
     {
-        or: (nextMatch:Match) => or(matchWMeta, nextMatch),
-        and: (nextMatch:Match) => and(matchWMeta, nextMatch),
+        or: (nextMatch:Match) => or(match, nextMatch),
+        and: (nextMatch:Match) => and(match, nextMatch),
         simple: (sentence:Sentence) => match(sentence),
     }
   )
@@ -131,11 +130,12 @@ const countIs= (op:Compare, value:number) => (sentences:Sentence[]) => {
 }
 const defaultMatchContext = () => ({sentences:{}} as MatchContext);
 const filteredSentences = (sentences:Sentence[]) => (
-  sentences.filter(s => !s.object === null)
+  sentences.filter(s => s.object)
 )
-const findSentences = (nodeProps:NodeProps) => (from:Sentence[]) => (match:Match, context:MatchContext=defaultMatchContext()) => (
-  sentenceResult(nodeProps)(filteredSentences(from).filter(s => match(s, context)))
-);
+const findSentences = (nodeProps:NodeProps) => (from:Sentence[]) => (match:Match=() => true, context:MatchContext=defaultMatchContext()) => {
+  // console.log({from});
+  return sentenceResult(nodeProps)(filteredSentences(from).filter(s => match(s, context)))
+}
 export {
   subjectIs,
   predicateIs,

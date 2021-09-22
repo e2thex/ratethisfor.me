@@ -1,4 +1,5 @@
 import { v4 } from "uuid";
+import { objectIs } from ".";
 import { and, predicateIs, subjectIs } from "./find";
 import { Match, NodeProps, OnFunc, OnIs, PredicateNode, Sentence, SubjectNode } from "./type";
 
@@ -20,36 +21,41 @@ const predicateNode = (props:NodeProps) => (subject:string) => (predicate:string
     addWatcher(watcher(match)(updateV))
 	  return v;
 	}
+  const nonEmptyVal = () => val() || subject + predicate; 
 	const is = (object:string) => {
 	  if(onIs) onIs();
 	  const sentence = {subject, predicate, object, date:Date.now()} 
 	  update(sentence);
+    updateV();
 	}
+
 	const s = (newPredicateIn?:string):PredicateNode => {
 	  const newPredicate = newPredicateIn || v4().toString();
 	  const currentObject = val();
-	  const object = currentObject || v4();
+	  const object = nonEmptyVal();
 	  const newOnIs = () => {
 	    if(!currentObject) is(object);
 	  }
 	  return predicateNode(props)(object)(newPredicate, newOnIs);
 	}
+  const findNext = (match:Match) => find(and(subjectIs(nonEmptyVal()), match));
 	const all = () => {
-	  const object = val() || v4();
+	  const object = nonEmptyVal();
     return node(object);
 	};
-	const del = () => {
+	const del = (depth=0) => {
+    if (depth>0) all().del(depth)
 	  update({subject, predicate, object:null, date:Date.now()})
 	}
   const on = (f:OnFunc) => {
     onUpdates.push(f);
   }
   const PredicateNode = {
-	  is,s,val,all,del, on, predicate: () => predicate,
+	  is,s,val,all,del, on, predicate: () => predicate, find:findNext,
 	} as PredicateNode;
   return PredicateNode;
 }
-const subjectNode = (props:NodeProps) => (subjectIn?: string) => {
+const subjectNode = (props:NodeProps) => (subjectIn?: string, onIs?:OnIs) => {
 	const {update, find, addWatcher } = props
 	const subject = subjectIn || v4().toString();
   const match = subjectIs(subject);
@@ -58,11 +64,15 @@ const subjectNode = (props:NodeProps) => (subjectIn?: string) => {
 	  return find(subjectIs(subject)).objectAsNode();
   }
   const on = (f:OnFunc) => {
-    addWatcher(watcher(match)(() => f(val())))
-
-  }
+    addWatcher(watcher(match)(() => {
+        f(val())
+      })
+    );
+  };
+  const del = (depth=0) => val().forEach(n => n.del(depth-1))
+  const findNext = (match:Match) => find(and(subjectIs(subject), match));
   const SubjectNode = {
-	  val,s, on,
+	  val,s, on, del, find:findNext,
 	} as SubjectNode;
   return SubjectNode;
 };

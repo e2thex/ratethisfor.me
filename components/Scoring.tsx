@@ -1,11 +1,15 @@
 import Gun from 'gun';
-import React, { useContext, useState } from 'react';
+import React from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { v4 } from 'uuid';
-import { isEqual, omit, mean, min, max } from 'lodash';
+import { mean, min, max } from 'lodash';
 import useLocalStorage from './useLocalStorage';
-import { DataContext, GunWrapper, IdContext, NodeContext } from './Gun';
+import { AsoptWrapper, useAspotContext } from './aspot/context';
+import { localDb, webSocketDB } from './aspot/db';
+import useNode from './aspot/useNode';
+import { and, objectIs, predicateIs, subjectIs } from './aspot';
+import { PredicateNode } from './aspot/type';
 
 const UserDiv = (props) => {
 	const {name, updateName, ...rest } = props;
@@ -14,12 +18,13 @@ const UserDiv = (props) => {
 	  <input 
       className = "text-center border w-full p-2 text-lg" 
       placeholder="Your name" 
-      onChange={updateChange}
+      onBlur={updateChange}
       defaultValue = {name}
+      {...rest}
     ></input>
 	)
-      }
-      const ScoreDiv = (props) => {
+}
+const ScoreDiv = (props) => {
 	const {score, updateScore} = props;
 	(props);
 	return (
@@ -33,19 +38,22 @@ const UserDiv = (props) => {
 	    onChange={updateScore}
 	  /> 
 	)
-      }
-      const ReasonDiv = (props) => {
+}
+const ReasonDiv = (props) => {
 	const {reason, updateReason, ...rest } = props;
 	const updateChange = (e:Event) => {
-	  updateReason(e.currentTarget.value);
+    const val = e.currentTarget.value;
+	    updateReason(val);
 	}
 	return (
-	  <textarea className = "max-w-full border w-full p-2 text-lg " placeholder ="Reason for Score" value = {reason} onChange={updateChange} {...rest}></textarea>
-      )
-      }
-      const ResultRow = (props) => {
+	  <textarea className = "max-w-full border w-full p-2 text-lg " placeholder ="Reason for Score" onBlur={updateChange} {...rest}>{reason}</textarea>
+  )
+}
+const ResultRow = (props) => {
 	const {data, removeItem } = props;
-	const {name, score, reason } = data ? data : {name:'', score:'', reason: ''}
+  const name = useNode(data.s('name'));
+  const score = useNode(data.s('score'));
+  const reason = useNode(data.s('reason'));
 	return (
 	  <tr className="border-t">
 	    <td className="p-2 text-center">{name}</td>
@@ -56,43 +64,42 @@ const UserDiv = (props) => {
 	    </td>
 	  </tr>
 	)
-      }
-      const Results = (props) => {
+}
+const Results = (props) => {
 	const { data, deleteItem } = props;
 	//const stuff = useContextGun()(data, 'data');
 	return (
 	  <table className="table-fixed">
 	    <thead>
 	      <tr>
-		<th className="w-1/6">Name</th>
-		<th className="w-1/6">Score</th>
-		<th className="w-7/12">Reason</th>
-		<th className="w-1/12"></th>
+          <th className="w-1/6">Name</th>
+          <th className="w-1/6">Score</th>
+          <th className="w-7/12">Reason</th>
+          <th className="w-1/12"></th>
 	      </tr>
 	    </thead>
 	    <tbody>
-	    {Object
-	      .keys(data)
-	      .sort()
-	      .map(id => {
-	      return (<ResultRow key={id} removeItem={() => deleteItem(id)} data={data[id]} />)
+	    {data.map((node:PredicateNode) => {
+        const id=node.predicate()
+	      return (<ResultRow key={id} removeItem={() => deleteItem(id)} data={node} />)
 	    })}
 	    </tbody>
 	  </table>
 	)
-       return <div></div>
-      }
-	type DataItem = {
-	  name: string,
-	  score: string,
-    reason: string,
-	}
-	type Data = {
-	  [key:string] : DataItem,
-	}
+}
+type DataItem = {
+  name: string,
+  score: string,
+  reason: string,
+}
+type Data = {
+  [key:string] : DataItem,
+}
 const Summary = (props) => {
   const {data} = props;
-  const scores = Object.keys(data).map(i => data[i].score);
+  const db = useAspotContext();
+  const scoreNodes = db.find(predicateIs('score')).objectAsNode();
+  const scores = scoreNodes.map(n => n.val())
   return (
     <table className="w-1/4 text-lg mx-auto my-4">
       <caption className="font-bold text-2xl">Summary Data</caption>
@@ -114,43 +121,48 @@ const Summary = (props) => {
   )
 }
 const MeetingAppInner = (props) => {
-  const {userName, setUserName} = props
-  const data = useContext(DataContext);
-  const {currentMeetingNode, currentUserNode} = useContext(NodeContext);
-  const {meetingId, userId} = useContext(IdContext);
+  const {userId} = props;
+  const db = useAspotContext();
+  const scoresNode = db.node('scores')
+  const currentScoreNode = scoresNode.s(userId);
+  const scores = useNode(scoresNode)
+  const currentScore = useNode(currentScoreNode.s('score'))
+  const currentReason = useNode(currentScoreNode.s('reason'))
+  const currentName = useNode(currentScoreNode.s('name')) 
 
 	const updateScore = (score:string) => {
-	  currentUserNode.put({score});
+    currentScoreNode.s('score').is(score);
 	}
 	const updateReason = (reason:string) => {
-	  currentUserNode.put({reason});
+	  currentScoreNode.s('reason').is(reason);
 	}
 	const updateName = (name:string) => {
-	  currentUserNode.put({name});
-    setUserName(name);
+	  currentScoreNode.s('name').is(name);
 	}
 	const deleteItem = (key:string) => {
-    currentMeetingNode.get(key).put(null);
+    console.log(scoresNode.s(key).val());
+    scoresNode.s(key).del(1);
 	}
-	const userScore = data[userId] ? data[userId].score : '';
 	return (
 		<>
-	    <UserDiv  name={userName} updateName={updateName} />
-	    <ScoreDiv score={userScore} updateScore={updateScore} />
-	    <ReasonDiv updateReason={updateReason} />
-	    <Results data={data} deleteItem={deleteItem} />
-      <Summary data={data} />
+	    <UserDiv  name={currentName} updateName={updateName} />
+	    <ScoreDiv score={currentScore} updateScore={updateScore} />
+	    <ReasonDiv reason={currentReason} updateReason={updateReason} />
+      <button className='w-full border rounded hover:bg-gray-100 focus:bg-gray-100'>Submit</button>
+	    <Results data={scores} deleteItem={deleteItem} />
+      <Summary />
     </>
 	)
 }
 const MeetingApp = (props) => {
 	const {id:meetingId} = props;
-	const [userId, setUserId ] = useLocalStorage('meetingUserId', v4().toString());
-	const [userName, setUserName ] = useLocalStorage('meetingUserName', '');
+	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
+  const db = webSocketDB('ws://localhost:8080', meetingId);
+  //const db = localDb(meetingId);
 	return (
-	  <GunWrapper meetingId={meetingId} userId={userId} >
-      <MeetingAppInner userName={userName} setUserName={setUserName} />
-	  </GunWrapper>
+        <AsoptWrapper db={db} >
+          <MeetingAppInner userId={userId} />
+	</AsoptWrapper>
 	)
 }
 export default MeetingApp;

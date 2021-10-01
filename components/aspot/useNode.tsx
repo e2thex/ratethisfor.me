@@ -1,10 +1,10 @@
 import { useState } from "react";
-import db from "./db";
-import { AspotNode, PredicateNode } from "./type";
+import { StoreNode, PredicateNode, SubjectNode } from "@aspot/core";
 
-const useNode = (node:AspotNode) => {
-	const [v, setV ] = useState(node.val())
-  node.on(setV);
+const useNode = (node:PredicateNode<StoreNode> | SubjectNode<StoreNode>) => {
+  const get = 'is' in node ? node.is : node.list;
+	const [v, setV ] = useState(get())
+  node.on((s) =>setV(get()))
   return v;
 }
 export default useNode;

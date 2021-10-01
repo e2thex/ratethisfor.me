@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@altrx/gundb-react-hooks": "^0.9.3",
+    "@aspot/core": "^0.1.2",
     "@rehooks/local-storage": "^2.4.3",
     "@types/lodash": "^4.14.172",
     "@types/react-router-dom": "^5.1.8",

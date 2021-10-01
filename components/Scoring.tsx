@@ -10,6 +10,7 @@ import { localDb, webSocketDB } from './aspot/db';
 import useNode from './aspot/useNode';
 import { and, objectIs, predicateIs, subjectIs } from './aspot';
 import { PredicateNode } from './aspot/type';
+import { aspotLocal, has, TermType  } from '@aspot/core';
 
 const UserDiv = (props) => {
 	const {name, updateName, ...rest } = props;
@@ -98,8 +99,8 @@ type Data = {
 const Summary = (props) => {
   const {data} = props;
   const db = useAspotContext();
-  const scoreNodes = db.find(predicateIs('score')).objectAsNode();
-  const scores = scoreNodes.map(n => n.val())
+  const scoreNodes = db.find(has(TermType.predicate)('score')).list();
+  const scores = scoreNodes.map(n => n.is())
   return (
     <table className="w-1/4 text-lg mx-auto my-4">
       <caption className="font-bold text-2xl">Summary Data</caption>
@@ -125,6 +126,8 @@ const MeetingAppInner = (props) => {
   const db = useAspotContext();
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
+	console.log({a:currentScoreNode.predicate()})
+	console.log(userId);
   const scores = useNode(scoresNode)
   const currentScore = useNode(currentScoreNode.s('score'))
   const currentReason = useNode(currentScoreNode.s('reason'))
@@ -140,7 +143,6 @@ const MeetingAppInner = (props) => {
 	  currentScoreNode.s('name').is(name);
 	}
 	const deleteItem = (key:string) => {
-    console.log(scoresNode.s(key).val());
     scoresNode.s(key).del(1);
 	}
 	return (
@@ -157,7 +159,8 @@ const MeetingAppInner = (props) => {
 const MeetingApp = (props) => {
 	const {id:meetingId} = props;
 	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
-  const db = webSocketDB('ws://localhost:8080', meetingId);
+  // const db = webSocketDB('ws://localhost:8080', meetingId);
+  const db = aspotLocal(meetingId || 'defaultMeeting')
   //const db = localDb(meetingId);
 	return (
         <AsoptWrapper db={db} >

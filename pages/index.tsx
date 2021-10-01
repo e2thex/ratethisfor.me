@@ -29,7 +29,7 @@ const Home: nextpage = () => {
   console.log(router.query);
   // test();
   // const db = localDb(id || 'defaultMeetng');
-  const db = webSocketDB('ws://localhost:8080');
+  //const db = webSocketDB('ws://localhost:8080');
   // const db = aspot(emptyDatabase());
   const MeetingBody = id ? Scoring : MeetingSelector
     return (

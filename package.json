@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "localweb": "tsc ./components/websocket.tsx && node ./components/websocket.js"
+    "localweb": "node ./node_modules/@aspot/websocket/lib/server.js"
   },
   "dependencies": {
     "@altrx/gundb-react-hooks": "^0.9.3",
-    "@aspot/core": "^0.1.2",
+    "@aspot/core": "^0.1.5",
+    "@aspot/react": "^0.1.5",
+    "@aspot/websocket": "^0.2.3",
     "@rehooks/local-storage": "^2.4.3",
     "@types/lodash": "^4.14.172",
     "@types/react-router-dom": "^5.1.8",

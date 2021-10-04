@@ -1,16 +1,13 @@
 import Gun from 'gun';
-import React from 'react';
+import React, { useState } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { v4 } from 'uuid';
 import { mean, min, max } from 'lodash';
 import useLocalStorage from './useLocalStorage';
-import { AsoptWrapper, useAspotContext } from './aspot/context';
-import { localDb, webSocketDB } from './aspot/db';
-import useNode from './aspot/useNode';
-import { and, objectIs, predicateIs, subjectIs } from './aspot';
-import { PredicateNode } from './aspot/type';
-import { aspotLocal, has, TermType  } from '@aspot/core';
+import { useNode, AspotWrapper, useAspotContext} from '@aspot/react';
+import { aspot, has, localConnector, TermType  } from '@aspot/core';
+import webSocketConnector from '@aspot/websocket';
 
 const UserDiv = (props) => {
 	const {name, updateName, ...rest } = props;
@@ -80,7 +77,7 @@ const Results = (props) => {
 	      </tr>
 	    </thead>
 	    <tbody>
-	    {data.map((node:PredicateNode) => {
+	    {data.map((node) => {
         const id=node.predicate()
 	      return (<ResultRow key={id} removeItem={() => deleteItem(id)} data={node} />)
 	    })}
@@ -126,8 +123,6 @@ const MeetingAppInner = (props) => {
   const db = useAspotContext();
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
-	console.log({a:currentScoreNode.predicate()})
-	console.log(userId);
   const scores = useNode(scoresNode)
   const currentScore = useNode(currentScoreNode.s('score'))
   const currentReason = useNode(currentScoreNode.s('reason'))
@@ -145,27 +140,31 @@ const MeetingAppInner = (props) => {
 	const deleteItem = (key:string) => {
     scoresNode.s(key).del(1);
 	}
+	const [hideResults, setHideResults] = useState(true)
+	const unhide = (event) => {
+		console.log('unhide');
+		setHideResults(false)
+	}
 	return (
 		<>
 	    <UserDiv  name={currentName} updateName={updateName} />
 	    <ScoreDiv score={currentScore} updateScore={updateScore} />
 	    <ReasonDiv reason={currentReason} updateReason={updateReason} />
-      <button className='w-full border rounded hover:bg-gray-100 focus:bg-gray-100'>Submit</button>
-	    <Results data={scores} deleteItem={deleteItem} />
-      <Summary />
+      <button className='w-full border rounded hover:bg-gray-100 focus:bg-gray-100' onClick={unhide}>See Results</button>
+	    { !hideResults ? <><Results data={scores} deleteItem={deleteItem} /> <Summary /></> : <></> }
+     
     </>
 	)
 }
 const MeetingApp = (props) => {
 	const {id:meetingId} = props;
 	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
-  // const db = webSocketDB('ws://localhost:8080', meetingId);
-  const db = aspotLocal(meetingId || 'defaultMeeting')
-  //const db = localDb(meetingId);
+  const node = aspot();
+	webSocketConnector('ws://localhost:8080', meetingId)(node);
 	return (
-        <AsoptWrapper db={db} >
-          <MeetingAppInner userId={userId} />
-	</AsoptWrapper>
+		<AspotWrapper node={node} >
+      <MeetingAppInner userId={userId} />
+	  </AspotWrapper>
 	)
 }
 export default MeetingApp;

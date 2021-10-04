@@ -17,7 +17,6 @@ import Scoring from '../components/Scoring';
 import MeetingSelector from '../components/MeetingSelector';
 import test, { aspot, predicateIs } from '../components/aspot';
 import { AsoptWrapper, AspotContext } from '../components/aspot/context';
-import useNode from '../components/aspot/useNode';
 import { CountOps, Term } from '../components/aspot/type';
 import { and, countIs, join, is, where, joinPrev } from '../components/aspot/find';
 import { emptyDatabase, localDb, webSocketDB } from '../components/aspot/db';

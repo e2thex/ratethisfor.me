@@ -142,7 +142,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 	return (
 		<>
 	    <UserDiv  name={currentName} updateName={currentScoreNode.s('name').is} />
-	    <ScoreDiv score={parseInt(currentScore)} updateScore={(v) => currentScoreNode.s('name').is(v.toString())} />
+	    <ScoreDiv score={parseInt(currentScore)} updateScore={(v) => currentScoreNode.s('score').is(v.toString())} />
 	    <ReasonDiv reason={currentReason} updateReason={currentScoreNode.s('reason').is} />
       <button className='w-full border rounded hover:bg-gray-100 focus:bg-gray-100' onClick={unhide}>See Results</button>
 	    { !hideResults ? <><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }

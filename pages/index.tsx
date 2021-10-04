@@ -1,27 +1,14 @@
-import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import Gun from 'gun';
 import { useRouter } from 'next/router';
-import React, { useContext, useState } from 'react';
-import Slider from 'rc-slider';
+import React, {  } from 'react';
 import 'rc-slider/assets/index.css';
-import { v4 } from 'uuid';
-import { useGunState } from '@altrx/gundb-react-hooks';
-import { countBy, isEqual, omit } from 'lodash';
-import { loadGetInitialProps } from 'next/dist/shared/lib/utils';
-import { useHistory, useLocation } from 'react-router-dom';
-import useLocalStorage from '../components/useLocalStorage';
 import Scoring from '../components/Scoring';
 import MeetingSelector from '../components/MeetingSelector';
-import test, { aspot, predicateIs } from '../components/aspot';
-import { AsoptWrapper, AspotContext } from '../components/aspot/context';
-import { CountOps, Term } from '../components/aspot/type';
-import { and, countIs, join, is, where, joinPrev } from '../components/aspot/find';
-import { emptyDatabase, localDb, webSocketDB } from '../components/aspot/db';
+import { NextPage } from 'next';
 
-const Home: nextpage = () => {
+const Home: NextPage = () => {
 
   const router = useRouter();
   const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id;
@@ -43,7 +30,7 @@ const Home: nextpage = () => {
         <h1 className={styles.title}>
           Rate your Meeting
         </h1>
-          <MeetingBody id={id}/>
+          <MeetingBody id={id || ''}/>
       </main>
 
       <footer className={styles.footer}>

@@ -132,7 +132,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 	  currentScoreNode.s('name').is(name);
 	}
 	const deleteItem = (key:string) => {
-    scoresNode.s(key).del(1);
+    scoresNode.s(key).del();
 	}
 	const [hideResults, setHideResults] = useState(true)
 	const unhide = () => {
@@ -154,7 +154,7 @@ const MeetingApp = (props:{id:string}) => {
 	const {id:meetingId} = props;
 	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
   const node = aspot();
-	webSocketConnector('ws://localhost:8080', meetingId)(node);
+	webSocketConnector('ws://meetingappwebsocket.herokuapp.com/', meetingId)(node);
 	return (
 		<AspotWrapper node={node} >
       <MeetingAppInner userId={userId} />

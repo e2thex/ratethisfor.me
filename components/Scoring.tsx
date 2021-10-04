@@ -1,4 +1,3 @@
-import Gun from 'gun';
 import React, { useState } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -6,23 +5,22 @@ import { v4 } from 'uuid';
 import { mean, min, max } from 'lodash';
 import useLocalStorage from './useLocalStorage';
 import { useNode, AspotWrapper, useAspotContext} from '@aspot/react';
-import { aspot, has, localConnector, TermType  } from '@aspot/core';
+import { aspot, has, localConnector, PredicateNode, StoreNode, TermType  } from '@aspot/core';
 import webSocketConnector from '@aspot/websocket';
 
-const UserDiv = (props) => {
+const UserDiv = (props:{name:string, updateName:(s:string) => void}) => {
 	const {name, updateName, ...rest } = props;
-	const updateChange = (e:Event) => updateName(e.currentTarget.value)
 	return (
 	  <input 
       className = "text-center border w-full p-2 text-lg" 
       placeholder="Your name" 
-      onBlur={updateChange}
+      onBlur={e => updateName(e.target.value)}
       defaultValue = {name}
       {...rest}
     ></input>
 	)
 }
-const ScoreDiv = (props) => {
+const ScoreDiv = (props:{score:number, updateScore:((n:number) => void)}) => {
 	const {score, updateScore} = props;
 	(props);
 	return (
@@ -37,21 +35,17 @@ const ScoreDiv = (props) => {
 	  /> 
 	)
 }
-const ReasonDiv = (props) => {
+const ReasonDiv = (props:{reason:string, updateReason:(r:string) => void}) => {
 	const {reason, updateReason, ...rest } = props;
-	const updateChange = (e:Event) => {
-    const val = e.currentTarget.value;
-	    updateReason(val);
-	}
 	return (
-	  <textarea className = "max-w-full border w-full p-2 text-lg " placeholder ="Reason for Score" onBlur={updateChange} {...rest}>{reason}</textarea>
+	  <textarea className = "max-w-full border w-full p-2 text-lg " placeholder ="Reason for Score" onBlur={e => updateReason(e.target.value)} {...rest}>{reason}</textarea>
   )
 }
-const ResultRow = (props) => {
+const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void}) => {
 	const {data, removeItem } = props;
-  const name = useNode(data.s('name'));
-  const score = useNode(data.s('score'));
-  const reason = useNode(data.s('reason'));
+  const name = useNode(data.s('name')) as string;
+  const score = useNode(data.s('score')) as string;
+  const reason = useNode(data.s('reason')) as string;
 	return (
 	  <tr className="border-t">
 	    <td className="p-2 text-center">{name}</td>
@@ -63,7 +57,7 @@ const ResultRow = (props) => {
 	  </tr>
 	)
 }
-const Results = (props) => {
+const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) => void}) => {
 	const { data, deleteItem } = props;
 	//const stuff = useContextGun()(data, 'data');
 	return (
@@ -93,11 +87,11 @@ type DataItem = {
 type Data = {
   [key:string] : DataItem,
 }
-const Summary = (props) => {
+const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   const {data} = props;
   const db = useAspotContext();
   const scoreNodes = db.find(has(TermType.predicate)('score')).list();
-  const scores = scoreNodes.map(n => n.is())
+  const scores = scoreNodes.map(n => n.is() || '')
   return (
     <table className="w-1/4 text-lg mx-auto my-4">
       <caption className="font-bold text-2xl">Summary Data</caption>
@@ -118,15 +112,15 @@ const Summary = (props) => {
     </table>
   )
 }
-const MeetingAppInner = (props) => {
+const MeetingAppInner = (props:{userId:string}) => {
   const {userId} = props;
   const db = useAspotContext();
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
-  const scores = useNode(scoresNode)
-  const currentScore = useNode(currentScoreNode.s('score'))
-  const currentReason = useNode(currentScoreNode.s('reason'))
-  const currentName = useNode(currentScoreNode.s('name')) 
+  const scores = useNode(scoresNode) as PredicateNode<StoreNode>[];
+  const currentScore = useNode(currentScoreNode.s('score')) as string;
+  const currentReason = useNode(currentScoreNode.s('reason')) as string;
+  const currentName = useNode(currentScoreNode.s('name')) as string;
 
 	const updateScore = (score:string) => {
     currentScoreNode.s('score').is(score);
@@ -141,22 +135,22 @@ const MeetingAppInner = (props) => {
     scoresNode.s(key).del(1);
 	}
 	const [hideResults, setHideResults] = useState(true)
-	const unhide = (event) => {
+	const unhide = () => {
 		console.log('unhide');
 		setHideResults(false)
 	}
 	return (
 		<>
-	    <UserDiv  name={currentName} updateName={updateName} />
-	    <ScoreDiv score={currentScore} updateScore={updateScore} />
-	    <ReasonDiv reason={currentReason} updateReason={updateReason} />
+	    <UserDiv  name={currentName} updateName={currentScoreNode.s('name').is} />
+	    <ScoreDiv score={parseInt(currentScore)} updateScore={(v) => currentScoreNode.s('name').is(v.toString())} />
+	    <ReasonDiv reason={currentReason} updateReason={currentScoreNode.s('reason').is} />
       <button className='w-full border rounded hover:bg-gray-100 focus:bg-gray-100' onClick={unhide}>See Results</button>
-	    { !hideResults ? <><Results data={scores} deleteItem={deleteItem} /> <Summary /></> : <></> }
+	    { !hideResults ? <><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>
 	)
 }
-const MeetingApp = (props) => {
+const MeetingApp = (props:{id:string}) => {
 	const {id:meetingId} = props;
 	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
   const node = aspot();

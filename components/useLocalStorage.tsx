@@ -4,7 +4,7 @@ const useLocalStorage = (key:string, defaultValue:string) => {
 	if(typeof window !== 'undefined') {
 	  if (window.localStorage.getItem(key)) {
 	    if (value !== window.localStorage.getItem(key) ) {
-	      setInternalValue(window.localStorage.getItem(key))
+	      setInternalValue(window.localStorage.getItem(key) as string)
 	    }
 	  }
 	  else {
@@ -17,6 +17,6 @@ const useLocalStorage = (key:string, defaultValue:string) => {
 	    // setInternalValue(window.localStorage.getItem(key))
 	  }
 	}
-	return [value as string, setValue];
+	return [value as string, setValue] as [string, (v:string) => void];
 }
 export default useLocalStorage;

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "deploy": "next build && next export && touch out/.nojekyll && gh-pages -d out",
+    "export": "next build && next export",
     "deploy:only": "gh-pages -d out",
     "serve:only": "serve out",
     "serve": "next build && next export &&  serve out",

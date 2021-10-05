@@ -7,8 +7,8 @@ const MeetingSelector = () => {
       e.preventDefault();
       window.location.replace(`?id=${encodeURI(newId)}`)
     }}>
-	    <input className = "text-center border w-11/12 p-2 text-lg" placeholder="Enter Meeting Name" value = {newId} onChange = {(e) => setNewId(e.currentTarget.value)} />
-	    <input className = "w-1/12 text-lg border p-2 bg-grey" type="submit" value = "Go" />  
+	    <input className = "text-center border w-5/6 p-2 text-lg" placeholder="Enter Meeting Name" value = {newId} onChange = {(e) => setNewId(e.currentTarget.value)} />
+	    <input className = "w-1/6 text-lg border p-2 bg-blue-300 hover:bg-blue-500 hover:text-white" type="submit" value = "Submit" />  
 	  </form>
 	)
 }

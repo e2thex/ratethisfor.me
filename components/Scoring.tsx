@@ -143,10 +143,11 @@ const MeetingAppInner = (props:{userId:string}) => {
 	}
 	return (
 		<>
+		  <div className='w-2/3 text-center mx-auto'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
 	    <UserDiv  name={currentName} updateName={currentScoreNode.s('name').is} />
 	    <ScoreDiv score={parseInt(currentScore)} updateScore={(v) => currentScoreNode.s('score').is(v.toString())} />
 	    <ReasonDiv reason={currentReason} updateReason={currentScoreNode.s('reason').is} />
-      <button className='w-full border p-2 text-lg rounded bg-gray-100 hover:bg-gray-200 focus:bg-gray-100' onClick={unhide}>See Results</button>
+      <button className='w-full border p-2 text-lg rounded bg-blue-300 hover:bg-blue-500 focus:bg-gray-100 hover:text-white' onClick={unhide}>Submit</button>
 	    { !hideResults ? <><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>

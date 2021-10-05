@@ -134,7 +134,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 	  currentScoreNode.s('name').is(name);
 	}
 	const deleteItem = (key:string) => {
-    scoresNode.s(key).del();
+    scoresNode.s(key).del(1);
 	}
 	const [hideResults, setHideResults] = useState(true)
 	const unhide = () => {

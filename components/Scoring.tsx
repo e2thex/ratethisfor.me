@@ -61,7 +61,7 @@ const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) =
 	const { data, deleteItem } = props;
 	//const stuff = useContextGun()(data, 'data');
 	return (
-	  <table className="table-fixed">
+	  <table className="table-fixed w-full">
 	    <thead>
 	      <tr>
           <th className="w-1/6">Name</th>

@@ -90,8 +90,10 @@ type Data = {
 const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   const {data} = props;
   const db = useAspotContext();
-  const scoreNodes = db.find(has(TermType.predicate)('score')).list();
-  const scores = scoreNodes.map(n => n.is() || '')
+  // const scoreNodes = db.find(has(TermType.predicate)('score')).list();
+  const scoreNodes = data;
+  const scores = scoreNodes.map(n => parseInt(n.s('score').is() || '')).filter(n => n);
+	console.log(scores)
   return (
     <table className="w-1/4 text-lg mx-auto my-4">
       <caption className="font-bold text-2xl">Summary Data</caption>
@@ -102,7 +104,7 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
         </tr>
         <tr className ="border-t">
           <th className="text-left p-2">Mean</th>
-	        <td  className="text-center">{mean(scores)}</td>
+	        <td  className="text-center">{mean(scores).toPrecision(3)}</td>
         </tr>
         <tr className ="border-t">
           <th className="text-left p-2">Min</th>

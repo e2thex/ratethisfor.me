@@ -26,20 +26,14 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="">
-        <h1 className={styles.title}>
-          Rate your Meeting
+        <h1 className="text-5xl text-center m-10">
+          { id ? <>Rate meeting &quot;{id}&quot; </> : <>Rate your Meeting</> }
         </h1>
           <MeetingBody id={id || ''}/>
       </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+      <footer className={styles.footer}> 
         created by e2thex
-        </a>
       </footer>
     </div>
   )

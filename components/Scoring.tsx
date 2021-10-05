@@ -154,7 +154,7 @@ const MeetingApp = (props:{id:string}) => {
 	const {id:meetingId} = props;
 	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
   const node = aspot();
-	webSocketConnector('ws://meetingappwebsocket.herokuapp.com/', meetingId)(node);
+	webSocketConnector('wss://meetingappwebsocket.herokuapp.com/', meetingId)(node);
 	return (
 		<AspotWrapper node={node} >
       <MeetingAppInner userId={userId} />

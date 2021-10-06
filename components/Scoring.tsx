@@ -7,6 +7,8 @@ import useLocalStorage from './useLocalStorage';
 import { useNode, AspotWrapper, useAspotContext} from '@aspot/react';
 import { aspot, has, localConnector, PredicateNode, StoreNode, TermType  } from '@aspot/core';
 import webSocketConnector from '@aspot/websocket';
+import copyToClipBoard from 'copy-to-clipboard';
+import CopyIcon from './CopyIcon'
 
 const UserDiv = (props:{name:string, updateName:(s:string) => void}) => {
 	const {name, updateName, ...rest } = props;
@@ -57,11 +59,18 @@ const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void})
 	  </tr>
 	)
 }
+const copy = (id:string) => {
+	const content = window.document.getElementById(id)?.outerHTML || ''
+	console.log(content);
+	copyToClipBoard(content);
+}
 const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) => void}) => {
 	const { data, deleteItem } = props;
+
 	//const stuff = useContextGun()(data, 'data');
 	return (
-	  <table className="table-fixed w-full">
+		<>
+	  <table id ='results' className="table-fixed w-full my-12">
 	    <thead>
 	      <tr>
           <th className="w-1/6">Name</th>
@@ -77,6 +86,7 @@ const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) =
 	    })}
 	    </tbody>
 	  </table>
+		</>
 	)
 }
 type DataItem = {
@@ -95,7 +105,7 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   const scores = scoreNodes.map(n => parseInt(n.s('score').is() || '')).filter(n => n);
 	console.log(scores)
   return (
-    <table className="w-1/4 text-lg mx-auto my-4">
+    <table className="w-1/4 text-lg mx-auto my-12">
       <caption className="font-bold text-2xl">Summary Data</caption>
       <tbody>
         <tr>
@@ -147,8 +157,9 @@ const MeetingAppInner = (props:{userId:string}) => {
 	    <UserDiv  name={currentName} updateName={currentScoreNode.s('name').is} />
 	    <ScoreDiv score={parseInt(currentScore)} updateScore={(v) => currentScoreNode.s('score').is(v.toString())} />
 	    <ReasonDiv reason={currentReason} updateReason={currentScoreNode.s('reason').is} />
-      <button className='w-full border p-2 text-lg rounded bg-blue-300 hover:bg-blue-500 focus:bg-gray-100 hover:text-white' onClick={unhide}>Submit</button>
-	    { !hideResults ? <><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
+      <button className='w-full border p-2 text-lg rounded bg-blue-300 hover:bg-blue-500 focus:bg-gray-100 hover:text-white' onClick={unhide}>See Results</button>
+	    { !hideResults ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline align-top' onClick={e => copy('results')}/>
+			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>
 	)

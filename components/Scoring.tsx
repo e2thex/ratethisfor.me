@@ -12,19 +12,25 @@ import CopyIcon from './CopyIcon'
 
 const UserDiv = (props:{name:string, updateName:(s:string) => void}) => {
 	const {name, updateName, ...rest } = props;
+	const [hasFocus, setHasFocus] = useState(false);
+	const [content, setContent] = useState(name);
+	const update = () => updateName(content);
+	window.setTimeout(() => {if(hasFocus) update()}, 1000)
 	return (
 	  <input 
       className = "text-center border w-full p-2 text-lg" 
       placeholder="Your name" 
-      onBlur={e => updateName(e.target.value)}
+			onFocus={() => setHasFocus(true)} 
+			onChange={e => setContent(e.target.value)}
+			onBlur={e => { setHasFocus(false) ;update()}}
       defaultValue = {name}
       {...rest}
     ></input>
 	)
 }
-const ScoreDiv = (props:{score:number, updateScore:((n:number) => void)}) => {
+const ScoreDiv = (props:{score:string, updateScore:((n:number) => void)}) => {
 	const {score, updateScore} = props;
-	(props);
+	console.log(props);
 	return (
 	  <Slider 
 	    className ="my-12 mt-4 mb-8"
@@ -33,14 +39,26 @@ const ScoreDiv = (props:{score:number, updateScore:((n:number) => void)}) => {
 	    step={1} 
 	    marks={{1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10}} 
 	    dots
+			value={parseInt(score)}
 	    onChange={updateScore}
 	  /> 
 	)
 }
 const ReasonDiv = (props:{reason:string, updateReason:(r:string) => void}) => {
 	const {reason, updateReason, ...rest } = props;
+	const [hasFocus, setHasFocus] = useState(false);
+	const [content, setContent] = useState(reason);
+	const update = () => updateReason(content);
+	window.setTimeout(() => {if(hasFocus) update()}, 1000)
 	return (
-	  <textarea className = "max-w-full border w-full p-2 text-lg " placeholder ="Reason for Score" onBlur={e => updateReason(e.target.value)} {...rest}>{reason}</textarea>
+	  <textarea 
+		  className = "max-w-full border w-full p-2 text-lg " 
+			placeholder ="Reason for Score" 
+			onFocus={() => setHasFocus(true)} 
+			onChange={e => setContent(e.target.value)}
+			onBlur={e => { setHasFocus(false) ;update()}} {...rest}
+			defaultValue={reason}
+			>{reason}</textarea>
   )
 }
 const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void}) => {
@@ -146,6 +164,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 	const deleteItem = (key:string) => {
     scoresNode.s(key).del(1);
 	}
+	//const [hideResults, setHideResults] = useState(!currentScoreNode.s('name').is() as boolean)
 	const [hideResults, setHideResults] = useState(true)
 	const unhide = () => {
 		console.log('unhide');
@@ -155,7 +174,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 		<>
 		  <div className='w-2/3 text-center mx-auto'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
 	    <UserDiv  name={currentName} updateName={currentScoreNode.s('name').is} />
-	    <ScoreDiv score={parseInt(currentScore)} updateScore={(v) => currentScoreNode.s('score').is(v.toString())} />
+	    <ScoreDiv score={currentScore} updateScore={(v) => currentScoreNode.s('score').is(v.toString())} />
 	    <ReasonDiv reason={currentReason} updateReason={currentScoreNode.s('reason').is} />
       <button className='w-full border p-2 text-lg rounded bg-blue-300 hover:bg-blue-500 focus:bg-gray-100 hover:text-white' onClick={unhide}>See Results</button>
 	    { !hideResults ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline align-top' onClick={e => copy('results')}/>

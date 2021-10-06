@@ -30,7 +30,6 @@ const UserDiv = (props:{name:string, updateName:(s:string) => void}) => {
 }
 const ScoreDiv = (props:{score:string, updateScore:((n:number) => void)}) => {
 	const {score, updateScore} = props;
-	console.log(props);
 	return (
 	  <Slider 
 	    className ="my-12 mt-4 mb-8"
@@ -79,7 +78,6 @@ const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void})
 }
 const copy = (id:string) => {
 	const content = window.document.getElementById(id)?.outerHTML || ''
-	console.log(content);
 	copyToClipBoard(content);
 }
 const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) => void}) => {
@@ -121,7 +119,6 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   // const scoreNodes = db.find(has(TermType.predicate)('score')).list();
   const scoreNodes = data;
   const scores = scoreNodes.map(n => parseInt(n.s('score').is() || '')).filter(n => n);
-	console.log(scores)
   return (
     <table className="w-1/4 text-lg mx-auto my-12">
       <caption className="font-bold text-2xl">Summary Data</caption>
@@ -167,7 +164,6 @@ const MeetingAppInner = (props:{userId:string}) => {
 	//const [hideResults, setHideResults] = useState(!currentScoreNode.s('name').is() as boolean)
 	const [hideResults, setHideResults] = useState(true)
 	const unhide = () => {
-		console.log('unhide');
 		setHideResults(false)
 	}
 	return (

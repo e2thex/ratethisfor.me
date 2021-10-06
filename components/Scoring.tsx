@@ -27,7 +27,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	}
 	return (
 		<>
-		   <input 
+		   <input autoFocus
       className = "text-center border border-red w-full p-2 text-lg" 
       placeholder="Enter your name" 
 			onChange={e => setTempName(e.target.value)}

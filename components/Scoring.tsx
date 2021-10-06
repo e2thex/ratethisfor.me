@@ -10,56 +10,53 @@ import webSocketConnector from '@aspot/websocket';
 import copyToClipBoard from 'copy-to-clipboard';
 import CopyIcon from './CopyIcon'
 
-const UserDiv = (props:{name:string, updateName:(s:string) => void}) => {
-	const {name, updateName, ...rest } = props;
-	const [hasFocus, setHasFocus] = useState(false);
-	const [content, setContent] = useState(name);
-	const update = () => updateName(content);
-	window.setTimeout(() => {if(hasFocus) update()}, 1000)
+const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
+	const { currentNode  } = props;
+	const name = useNode(currentNode.s('name'))  as string || '';
+	const reason = useNode(currentNode.s('reason'))  as string || '';
+	const score = useNode(currentNode.s('score')) as string || '';
+	const [tempName, setTempName] = useState('');
+	const [tempReason, setTempReason] = useState(reason);
+	const [tempScore, setTempScore] = useState(score);
+	const node = useAspotContext();
+	const update = () => {
+
+    if(tempName) currentNode.s('name').is(tempName);
+    if (tempScore) currentNode.s('score').is(tempScore);
+    if (tempReason) currentNode.s('reason').is(tempReason);
+	}
 	return (
-	  <input 
-      className = "text-center border w-full p-2 text-lg" 
-      placeholder="Your name" 
-			onFocus={() => setHasFocus(true)} 
-			onChange={e => setContent(e.target.value)}
-			onBlur={e => { setHasFocus(false) ;update()}}
+		<>
+		   <input 
+      className = "text-center border border-red w-full p-2 text-lg" 
+      placeholder="Enter your name" 
+			onChange={e => setTempName(e.target.value)}
       defaultValue = {name}
-      {...rest}
-    ></input>
-	)
-}
-const ScoreDiv = (props:{score:string, updateScore:((n:number) => void)}) => {
-	const {score, updateScore} = props;
-	return (
-	  <Slider 
+     ></input>	
+		  <Slider 
 	    className ="my-12 mt-4 mb-8"
 	    min={1} 
 	    max={10} 
 	    step={1} 
 	    marks={{1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10}} 
 	    dots
-			value={parseInt(score)}
-	    onChange={updateScore}
+			value={parseInt(tempScore || score)}
+	    onChange={v => setTempScore(v.toString())}
 	  /> 
-	)
-}
-const ReasonDiv = (props:{reason:string, updateReason:(r:string) => void}) => {
-	const {reason, updateReason, ...rest } = props;
-	const [hasFocus, setHasFocus] = useState(false);
-	const [content, setContent] = useState(reason);
-	const update = () => updateReason(content);
-	window.setTimeout(() => {if(hasFocus) update()}, 1000)
-	return (
-	  <textarea 
+		<textarea 
 		  className = "max-w-full border w-full p-2 text-lg " 
 			placeholder ="Reason for Score" 
-			onFocus={() => setHasFocus(true)} 
-			onChange={e => setContent(e.target.value)}
-			onBlur={e => { setHasFocus(false) ;update()}} {...rest}
+			onChange={e => setTempReason(e.target.value)}
 			defaultValue={reason}
-			>{reason}</textarea>
-  )
-}
+			></textarea>
+    <button 
+			className={`w-full border p-2 text-lg roundedfocus:bg-gray-100 hover:text-white ${tempName || name ? 'bg-blue-300 hover:bg-blue-500' : ''}`}
+			onClick={update}
+			>{name ? 'Resubmit' : 'Submit and See Results'}</button>
+		</>
+
+	)
+};
 const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void}) => {
 	const {data, removeItem } = props;
   const name = useNode(data.s('name')) as string;
@@ -145,35 +142,16 @@ const MeetingAppInner = (props:{userId:string}) => {
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
   const scores = useNode(scoresNode) as PredicateNode<StoreNode>[];
-  const currentScore = useNode(currentScoreNode.s('score')) as string;
-  const currentReason = useNode(currentScoreNode.s('reason')) as string;
-  const currentName = useNode(currentScoreNode.s('name')) as string;
+	const name = useNode(currentScoreNode.s('name')) as string;
 
-	const updateScore = (score:string) => {
-    currentScoreNode.s('score').is(score);
-	}
-	const updateReason = (reason:string) => {
-	  currentScoreNode.s('reason').is(reason);
-	}
-	const updateName = (name:string) => {
-	  currentScoreNode.s('name').is(name);
-	}
 	const deleteItem = (key:string) => {
     scoresNode.s(key).del(1);
 	}
-	//const [hideResults, setHideResults] = useState(!currentScoreNode.s('name').is() as boolean)
-	const [hideResults, setHideResults] = useState(true)
-	const unhide = () => {
-		setHideResults(false)
-	}
 	return (
 		<>
-		  <div className='w-2/3 text-center mx-auto'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
-	    <UserDiv  name={currentName} updateName={currentScoreNode.s('name').is} />
-	    <ScoreDiv score={currentScore} updateScore={(v) => currentScoreNode.s('score').is(v.toString())} />
-	    <ReasonDiv reason={currentReason} updateReason={currentScoreNode.s('reason').is} />
-      <button className='w-full border p-2 text-lg rounded bg-blue-300 hover:bg-blue-500 focus:bg-gray-100 hover:text-white' onClick={unhide}>See Results</button>
-	    { !hideResults ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline align-top' onClick={e => copy('results')}/>
+		  <div className='w-2/3 text-center mx-auto my-12'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
+			<UserForm currentNode={currentScoreNode} />
+	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline align-top' onClick={e => copy('results')}/>
 			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>

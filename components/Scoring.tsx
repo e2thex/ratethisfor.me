@@ -4,11 +4,13 @@ import 'rc-slider/assets/index.css';
 import { v4 } from 'uuid';
 import { mean, min, max } from 'lodash';
 import useLocalStorage from './useLocalStorage';
-import { useNode, AspotWrapper, useAspotContext} from '@aspot/react';
-import { aspot, has, localConnector, PredicateNode, StoreNode, TermType  } from '@aspot/core';
+import {markdownTable} from 'markdown-table'
+import { useNode, AspotWrapper, useAspotContext, useNodeList} from '@aspot/react';
+import { aspot, has, localConnector, PredicateNode, StoreNode, SubjectNode, TermType  } from '@aspot/core';
 import webSocketConnector from '@aspot/websocket';
 import copyToClipBoard from 'copy-to-clipboard';
 import CopyIcon from './CopyIcon'
+import MdIcon from './MdIcon';
 
 const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	const { currentNode  } = props;
@@ -20,7 +22,6 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	const [tempScore, setTempScore] = useState(score);
 	const node = useAspotContext();
 	const update = () => {
-
     if(tempName) currentNode.s('name').is(tempName);
     if (tempScore) currentNode.s('score').is(tempScore);
     if (tempReason) currentNode.s('reason').is(tempReason);
@@ -57,6 +58,17 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 
 	)
 };
+const markdownResults = (data:SubjectNode<StoreNode>) => {
+	const rows = data.list().map(d => [
+		d.s('name').value(),
+		d.s('score').value(),
+		d.s('reason').value(),
+	]);
+	return markdownTable([
+		['name', 'score', 'reason'],
+		...rows,
+	]);
+}
 const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void}) => {
 	const {data, removeItem } = props;
   const name = useNode(data.s('name')) as string;
@@ -115,7 +127,7 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   const db = useAspotContext();
   // const scoreNodes = db.find(has(TermType.predicate)('score')).list();
   const scoreNodes = data;
-  const scores = scoreNodes.map(n => parseInt(n.s('score').is() || '')).filter(n => n);
+  const scores = scoreNodes.map(n => parseInt(n.s('score').value() || '')).filter(n => n);
   return (
     <table className="w-1/4 text-lg mx-auto my-12">
       <caption className="font-bold text-2xl">Summary Data</caption>
@@ -141,7 +153,8 @@ const MeetingAppInner = (props:{userId:string}) => {
   const db = useAspotContext();
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
-  const scores = useNode(scoresNode) as PredicateNode<StoreNode>[];
+  const scores = useNodeList(scoresNode);
+  // const scores = scoresNode.list()
 	const name = useNode(currentScoreNode.s('name')) as string;
 
 	const deleteItem = (key:string) => {
@@ -151,7 +164,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 		<>
 		  <div className='w-2/3 text-center mx-auto my-12'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
 			<UserForm currentNode={currentScoreNode} />
-	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline align-top' onClick={e => copy('results')}/>
+	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/><MdIcon className='cursor-pointer inline w-8' onClick={e => copyToClipBoard(markdownResults(scoresNode))} />
 			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>

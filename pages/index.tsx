@@ -27,7 +27,7 @@ const Home: NextPage = () => {
 
       <main className="">
         <h1 className="text-5xl text-center m-10">
-          { id ? <>Rate meeting &quot;{id}&quot; </> : <>Rate your Meeting</> }
+          { id ? <>Rate meeting {id} </> : <>Rate your Meeting</> }
         </h1>
           <MeetingBody id={id || ''}/>
       </main>

@@ -51,7 +51,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 			defaultValue={reason}
 			></textarea>
     <button 
-			className={`w-full border p-2 text-lg  ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 rounded hover:bg-blue-500hover:text-white' : ''}`}
+			className={`w-full border p-2 text-lg  ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 rounded hover:bg-blue-500 hover:text-white' : ''}`}
 			onClick={update}
 			>{name ? 'Resubmit' : 'Submit and See Results'}</button>
 		</>
@@ -87,7 +87,7 @@ const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void})
 }
 const copy = (id:string) => {
 	const content = window.document.getElementById(id)?.outerHTML || ''
-	copyToClipBoard(content);
+	copyToClipBoard(content, {format:"text/html"});
 }
 const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) => void}) => {
 	const { data, deleteItem } = props;

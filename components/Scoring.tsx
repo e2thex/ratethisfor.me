@@ -51,7 +51,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 			defaultValue={reason}
 			></textarea>
     <button 
-			className={`w-full border p-2 text-lg roundedfocus:bg-gray-100 hover:text-white ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 hover:bg-blue-500' : ''}`}
+			className={`w-full border p-2 text-lg  ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 rounded hover:bg-blue-500hover:text-white' : ''}`}
 			onClick={update}
 			>{name ? 'Resubmit' : 'Submit and See Results'}</button>
 		</>

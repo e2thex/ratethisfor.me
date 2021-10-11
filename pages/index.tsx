@@ -3,19 +3,22 @@ import styles from '../styles/Home.module.css'
 import { useRouter } from 'next/router';
 import React, {  } from 'react';
 import 'rc-slider/assets/index.css';
+import copyToClipBoard from 'copy-to-clipboard';
 import Scoring from '../components/Scoring';
 import MeetingSelector from '../components/MeetingSelector';
 import { NextPage } from 'next';
+import ShareIcon from '../components/ShareIcon';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Home: NextPage = () => {
 
   const router = useRouter();
   const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id;
-  console.log(router.query);
-  // test();
-  // const db = localDb(id || 'defaultMeetng');
-  //const db = webSocketDB('ws://localhost:8080');
-  // const db = aspot(emptyDatabase());
+  const copyUrl = () => {
+    copyToClipBoard(window.location.href)
+    toast.success('Copy url to clipboard',{autoClose: 2000, hideProgressBar: true})
+  }
   const MeetingBody = id ? Scoring : MeetingSelector
     return (
     <div className="container max-w-2xl mx-auto">
@@ -27,10 +30,11 @@ const Home: NextPage = () => {
 
       <main className="">
         <h1 className="text-5xl text-center m-10">
-          { id ? <>Rate meeting {id} </> : <>Rate your Meeting</> }
+          { id ? <>Rate meeting {id} <ShareIcon  className="inline cursor-pointer" xlinkTitle="Copy share url to clipboard" onClick={copyUrl}/></> : <>Rate your Meeting</> }
         </h1>
           <MeetingBody id={id || ''}/>
       </main>
+      <ToastContainer />
 
       <footer className={styles.footer}> 
         created by e2thex

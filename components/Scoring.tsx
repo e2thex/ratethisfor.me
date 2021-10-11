@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { mean, min, max } from 'lodash';
 import useLocalStorage from './useLocalStorage';
 import {markdownTable} from 'markdown-table'
+import { toast } from 'react-toastify';
 import { useNode, AspotWrapper, useAspotContext, useNodeList} from '@aspot/react';
 import { aspot, has, localConnector, PredicateNode, StoreNode, SubjectNode, TermType  } from '@aspot/core';
 import webSocketConnector from '@aspot/websocket';
@@ -22,10 +23,16 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	const [tempScore, setTempScore] = useState(score);
 	const node = useAspotContext();
 	const update = () => {
-    if(tempName) currentNode.s('name').is(tempName);
+		if (tempName === name && tempScore === score && tempReason === reason) {
+		  toast.error('You Did not enter anything to set.', {autoClose: 2000, hideProgressBar: true})
+      return;
+		}
+    if (tempName) currentNode.s('name').is(tempName);
     if (tempScore) currentNode.s('score').is(tempScore);
     if (tempReason) currentNode.s('reason').is(tempReason);
+		toast.success('Set/Update Score! Thank you.', {autoClose: 2000, hideProgressBar: true})
 	}
+
 	return (
 		<>
 		   <input autoFocus
@@ -88,6 +95,7 @@ const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void})
 const copy = (id:string) => {
 	const content = window.document.getElementById(id)?.outerHTML || ''
 	copyToClipBoard(content, {format:"text/html"});
+	toast.success('Copy Result table to Clipboard',{autoClose: 2000, hideProgressBar: true})
 }
 const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) => void}) => {
 	const { data, deleteItem } = props;
@@ -158,13 +166,15 @@ const MeetingAppInner = (props:{userId:string}) => {
 	const name = useNode(currentScoreNode.s('name')) as string;
 
 	const deleteItem = (key:string) => {
+		const name = scoresNode.s(key).s('name').value();
     scoresNode.s(key).del(1);
+		toast.success(`Delete record for ${name}`,{autoClose: 2000, hideProgressBar: true},)
 	}
 	return (
 		<>
 		  <div className='w-2/3 text-center mx-auto my-12'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
 			<UserForm currentNode={currentScoreNode} />
-	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/><MdIcon className='cursor-pointer inline w-8' onClick={e => copyToClipBoard(markdownResults(scoresNode))} />
+	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/><MdIcon className='cursor-pointer inline w-8' onClick={e => {copyToClipBoard(markdownResults(scoresNode)); 	toast.success('Copy Result table to Clipboard as Markdown',{autoClose: 2000, hideProgressBar: true})}} />
 			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>

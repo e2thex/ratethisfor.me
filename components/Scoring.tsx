@@ -78,7 +78,10 @@ const markdownResults = (data:SubjectNode<StoreNode>) => {
 }
 const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void}) => {
 	const {data, removeItem } = props;
-	const { name, score, reason } = data.value(1);
+	const name = useNode(data.s('name'));
+	const score = useNode(data.s('score'));
+	const reason = useNode(data.s('reason'));
+	
 	return (
 	  <tr className="border-t">
 	    <td className="p-2 text-center">{name}</td>
@@ -172,7 +175,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 		<>
 		  <div className='w-2/3 text-center mx-auto my-12'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
 			<UserForm currentNode={currentScoreNode} />
-	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/><MdIcon className='cursor-pointer inline w-8' onClick={e => {copyToClipBoard(markdownResults(scoresNode)); 	toast.success('Copy Result table to Clipboard as Markdown',{autoClose: 2000, hideProgressBar: true})}} />
+	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <span title='Copy Results to clipboard'><CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/></span><span title='Copy Results to clipboard as Markdown'><MdIcon className='cursor-pointer inline w-8' onClick={e => {copyToClipBoard(markdownResults(scoresNode)); 	toast.success('Copy Result table to Clipboard as Markdown',{autoClose: 2000, hideProgressBar: true})}} /></span>
 			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
      
     </>

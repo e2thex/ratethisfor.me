@@ -36,8 +36,8 @@ const Home: NextPage = () => {
       </main>
       <ToastContainer />
 
-      <footer className={styles.footer}> 
-        created by e2thex
+      <footer className="text-center"> 
+        Created by <a href="http://www.e2thex.org">e2thex</a>
       </footer>
     </div>
   )

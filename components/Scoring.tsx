@@ -134,9 +134,10 @@ type Data = {
 const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   const {data} = props;
   const db = useAspotContext();
-  // const scoreNodes = db.find(has(TermType.predicate)('score')).list();
-  const scoreNodes = data;
-  const scores = scoreNodes.map(n => parseInt(n.s('score').value() || '')).filter(n => n);
+  const [scoreNodes, setScoreNodes] =  useState(db.node('scores').list());
+  const getScores = () => db.node('scores').list().map(n => parseInt(n.s('score').value() || '')).filter(n => n);
+  const [scores, setScores] =  useState(getScores());
+  db.watch((...sentences) => { if(sentences.filter(s => s.predicate === 'score').length) setScores(getScores())})
   return (
     <table className="w-1/4 text-lg mx-auto my-12">
       <caption className="font-bold text-2xl">Summary Data</caption>

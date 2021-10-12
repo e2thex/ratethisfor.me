@@ -30,13 +30,13 @@ const Home: NextPage = () => {
 
       <main className="">
         <h1 className="text-5xl text-center m-10">
-          { id ? <>Rate meeting {id} <ShareIcon  className="inline cursor-pointer" xlinkTitle="Copy share url to clipboard" onClick={copyUrl}/></> : <>Rate your Meeting</> }
+          { id ? <>Rate meeting <em>{id}</em> <ShareIcon  className="inline cursor-pointer" xlinkTitle="Copy share url to clipboard" onClick={copyUrl}/></> : <>Rate your Meeting</> }
         </h1>
           <MeetingBody id={id || ''}/>
       </main>
       <ToastContainer />
 
-      <footer className="text-center"> 
+      <footer className="text-center m-12"> 
         Created by <a href="http://www.e2thex.org">e2thex</a>
       </footer>
     </div>

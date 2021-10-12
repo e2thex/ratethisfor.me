@@ -78,9 +78,7 @@ const markdownResults = (data:SubjectNode<StoreNode>) => {
 }
 const ResultRow = (props:{data:PredicateNode<StoreNode>, removeItem:() => void}) => {
 	const {data, removeItem } = props;
-  const name = useNode(data.s('name')) as string;
-  const score = useNode(data.s('score')) as string;
-  const reason = useNode(data.s('reason')) as string;
+	const { name, score, reason } = data.value(1);
 	return (
 	  <tr className="border-t">
 	    <td className="p-2 text-center">{name}</td>

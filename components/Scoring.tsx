@@ -40,7 +40,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 			onChange={e => setTempName(e.target.value)}
       defaultValue = {name}
      ></input>	
-		 <input className ="mt-4 w-full" type ='range' max='10' min='1' step='1' list='tickmarks' onChange={v => setTempScore(v.target.value.toString())} defaultValue={parseInt(tempScore || score || '1')}/>
+		 <input id="score" className ="mt-4 w-full"  aria-label="Meeting Score between 1 and 10" placeholder="Enter your meeting score" type ='range' max='10' min='1' step='1' list='tickmarks' onChange={v => setTempScore(v.target.value.toString())} defaultValue={parseInt(tempScore || score || '1')}/>
 			<datalist id="tickmarks" className="flex flex-row justify-between w-full text-center text-gray-600 mb-4">
 				<option value="1" label="1"></option>
 				<option value="2" label="2"></option>

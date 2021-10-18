@@ -36,7 +36,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	return (
 		<>
 		   <input autoFocus
-      className = "text-center border border-red w-full p-2 text-lg" 
+      className = "text-center border border-red w-full p-2 text-lg placeholder-gray-600 border-gray-600 placeholder-italic" 
       placeholder="Enter your name" 
 			onChange={e => setTempName(e.target.value)}
       defaultValue = {name}
@@ -52,13 +52,13 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	    onChange={v => setTempScore(v.toString())}
 	  /> 
 		<textarea 
-		  className = "max-w-full border w-full p-2 text-lg " 
+		  className = "max-w-full border w-full p-2 text-lg placeholder-gray-600 border-gray-600 " 
 			placeholder ="Reason for Score" 
 			onChange={e => setTempReason(e.target.value)}
 			defaultValue={reason}
 			></textarea>
     <button 
-			className={`w-full border p-2 text-lg  ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 rounded hover:bg-blue-500 hover:text-white' : ''}`}
+			className={`w-full border border-gray-600 p-2 text-lg  ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 rounded hover:bg-blue-500 hover:text-white' : ''}`}
 			onClick={update}
 			>{name ? 'Resubmit' : 'Submit and See Results'}</button>
 		</>
@@ -137,6 +137,8 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
   const [scoreNodes, setScoreNodes] =  useState(db.node('scores').list());
   const getScores = () => db.node('scores').list().map(n => parseInt(n.s('score').value() || '')).filter(n => n);
   const [scores, setScores] =  useState(getScores());
+	// const score = useNodeList(db.node('scores'), 1).map(n => parseInt(n.score) || '').finter(n => n);n
+
   db.watch((...sentences) => { if(sentences.filter(s => s.predicate === 'score').length) setScores(getScores())})
   return (
     <table className="w-1/4 text-lg mx-auto my-12">

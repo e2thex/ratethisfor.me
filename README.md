@@ -1,4 +1,4 @@
-This project is used to build [score-my-meeting.e2thex.org](score-my-meeting.e2thex.org)
+This project is used to build [score-my-meeting.e2thex.org](https://score-my-meeting.e2thex.org)
 
 ## Getting Started
 

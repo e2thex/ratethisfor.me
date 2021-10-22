@@ -32,7 +32,6 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
     if (tempReason) currentNode.s('reason').is(tempReason);
 		toast.success('Set/Update Score! Thank you.', {autoClose: 2000, hideProgressBar: true})
 	}
-
 	return (
 		<>
 		   <input autoFocus
@@ -41,16 +40,20 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 			onChange={e => setTempName(e.target.value)}
       defaultValue = {name}
      ></input>	
-		  <Slider 
-	    className ="my-12 mt-4 mb-8"
-	    min={1} 
-	    max={10} 
-	    step={1} 
-	    marks={{1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10}} 
-	    dots
-			value={parseInt(tempScore || score)}
-	    onChange={v => setTempScore(v.toString())}
-	  /> 
+		 <label htmlFor="score" className="sr-only">Meeting Score between 1 and 10</label>
+		 <input id="score" className ="mt-4 w-full" type ='range' max='10' min='1' step='1' list='tickmarks' onChange={v => setTempScore(v.target.value.toString())} defaultValue={parseInt(tempScore || score || '1')}/>
+			<datalist id="tickmarks" className="flex flex-row justify-between w-full text-center text-gray-600 mb-4">
+				<option value="1" label="1"></option>
+				<option value="2" label="2"></option>
+				<option value="3" label="3"></option>
+				<option value="4" label="4"></option>
+				<option value="5" label="5"></option>
+				<option value="6" label="6"></option>
+				<option value="7" label="7"></option>
+				<option value="8" label="8"></option>
+				<option value="9" label="9"></option>
+				<option value="10" label="10" className="-mr-2"></option>
+			</datalist>
 		<textarea 
 		  className = "max-w-full border w-full p-2 text-lg placeholder-gray-600 border-gray-600 " 
 			placeholder ="Reason for Score" 

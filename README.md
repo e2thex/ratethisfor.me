@@ -1,8 +1,8 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This project is used to build [rate-my-meeting.e2thex.org](rate-my-meeting.e2thex.org)
 
 ## Getting Started
 
-First, run the development server:
+IF you want to try it out locally one can run:
 
 ```bash
 npm run dev
@@ -12,5 +12,6 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Workflow
 
-This App is being deployed to [netlify](https://app.netlify.com/sites/score-my-meeting/overview).
+This App is being deployed to [netlify](https://app.netlify.com/sites/score-my-meeting/overview) on each push to main. (also any PR will create a review env there.

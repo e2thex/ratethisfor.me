@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-const MeetingSelector = () => {
+const Selector = () => {
 	const [newId, setNewId ] = useState('');
 	// const history = useHistory();
 	return (
@@ -12,4 +12,4 @@ const MeetingSelector = () => {
 	  </form>
 	)
 }
-export default MeetingSelector
+export default Selector

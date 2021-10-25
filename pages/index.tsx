@@ -4,8 +4,8 @@ import { useRouter } from 'next/router';
 import React, {  } from 'react';
 import 'rc-slider/assets/index.css';
 import copyToClipBoard from 'copy-to-clipboard';
-import Scoring from '../components/Scoring';
-import MeetingSelector from '../components/MeetingSelector';
+import Rating from '../components/Rating';
+import Selector from '../components/Selector';
 import { NextPage } from 'next';
 import ShareIcon from '../components/ShareIcon';
 import { ToastContainer, toast } from 'react-toastify';
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
     copyToClipBoard(window.location.href)
     toast.success('Copy url to clipboard',{autoClose: 2000, hideProgressBar: true})
   }
-  const MeetingBody = id ? Scoring : MeetingSelector
+  const MeetingBody = id ? Rating : Selector
     return (
     <div className="container max-w-2xl mx-auto">
       <Head>

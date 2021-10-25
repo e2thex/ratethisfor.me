@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { v4 } from 'uuid';
 import { mean, min, max } from 'lodash';
@@ -7,7 +6,7 @@ import useLocalStorage from './useLocalStorage';
 import {markdownTable} from 'markdown-table'
 import { toast } from 'react-toastify';
 import { useNode, AspotWrapper, useAspotContext, useNodeList} from '@aspot/react';
-import { aspot, has, localConnector, PredicateNode, StoreNode, SubjectNode, TermType  } from '@aspot/core';
+import { aspot, PredicateNode, StoreNode, SubjectNode  } from '@aspot/core';
 import webSocketConnector from '@aspot/websocket';
 import copyToClipBoard from 'copy-to-clipboard';
 import CopyIcon from './CopyIcon'
@@ -163,8 +162,8 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
     </table>
   )
 }
-const MeetingAppInner = (props:{userId:string, meetingId:string}) => {
-  const {userId, meetingId} = props;
+const RatingAppInner = (props:{userId:string, id:string}) => {
+  const {userId, id} = props;
   const db = useAspotContext();
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
@@ -179,7 +178,7 @@ const MeetingAppInner = (props:{userId:string, meetingId:string}) => {
 	}
 	return (
 		<>
-		  <div className='w-2/3 text-center mx-auto my-12'>Please rate <strong>{meetingId}</strong> using the form below. <div className='italic font-light'>The data is only used for the purposes of this rating and is not saved.</div></div>
+		  <div className='w-2/3 text-center mx-auto my-12'>Please rate <strong>{id}</strong> using the form below. <div className='italic font-light'>The data is only used for the purposes of this rating and is not saved.</div></div>
 			<UserForm currentNode={currentScoreNode} />
 	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <span title='Copy Results to clipboard'><CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/></span><span title='Copy Results to clipboard as Markdown'><MdIcon className='cursor-pointer inline w-8' onClick={e => {copyToClipBoard(markdownResults(scoresNode)); 	toast.success('Copy Result table to Clipboard as Markdown',{autoClose: 2000, hideProgressBar: true})}} /></span>
 			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
@@ -187,15 +186,15 @@ const MeetingAppInner = (props:{userId:string, meetingId:string}) => {
     </>
 	)
 }
-const MeetingApp = (props:{id:string}) => {
-	const {id:meetingId} = props;
+const RatingApp = (props:{id:string}) => {
+	const {id} = props;
 	const [userId, setUserId ] = useLocalStorage('meetingUserId2', v4());
   const node = aspot();
-	webSocketConnector('wss://meetingappwebsocket.herokuapp.com/', meetingId)(node);
+	webSocketConnector('wss://meetingappwebsocket.herokuapp.com/', id)(node);
 	return (
 		<AspotWrapper node={node} >
-      <MeetingAppInner userId={userId} meetingId={meetingId}/>
+      <RatingAppInner userId={userId} id={id}/>
 	  </AspotWrapper>
 	)
 }
-export default MeetingApp;
+export default RatingApp;

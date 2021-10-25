@@ -163,8 +163,8 @@ const Summary = (props:{ data:PredicateNode<StoreNode>[]}) => {
     </table>
   )
 }
-const MeetingAppInner = (props:{userId:string}) => {
-  const {userId} = props;
+const MeetingAppInner = (props:{userId:string, meetingId:string}) => {
+  const {userId, meetingId} = props;
   const db = useAspotContext();
   const scoresNode = db.node('scores')
   const currentScoreNode = scoresNode.s(userId);
@@ -179,7 +179,7 @@ const MeetingAppInner = (props:{userId:string}) => {
 	}
 	return (
 		<>
-		  <div className='w-2/3 text-center mx-auto my-12'>Please rate the meeting using the form below. <div className='italic font-light'>The data is only used for the purposes of rating a single meeting and is not saved.</div></div>
+		  <div className='w-2/3 text-center mx-auto my-12'>Please rate <strong>{meetingId}</strong> using the form below. <div className='italic font-light'>The data is only used for the purposes of this rating and is not saved.</div></div>
 			<UserForm currentNode={currentScoreNode} />
 	    { name ? <><h2 className='mx-auto w-50 text-3xl text-center font-bold my-12'>Results <span title='Copy Results to clipboard'><CopyIcon className='cursor-pointer inline' onClick={e => copy('results')}/></span><span title='Copy Results to clipboard as Markdown'><MdIcon className='cursor-pointer inline w-8' onClick={e => {copyToClipBoard(markdownResults(scoresNode)); 	toast.success('Copy Result table to Clipboard as Markdown',{autoClose: 2000, hideProgressBar: true})}} /></span>
 			</h2><Results data={scores} deleteItem={deleteItem} /> <Summary data={scores} /></> : <></> }
@@ -194,7 +194,7 @@ const MeetingApp = (props:{id:string}) => {
 	webSocketConnector('wss://meetingappwebsocket.herokuapp.com/', meetingId)(node);
 	return (
 		<AspotWrapper node={node} >
-      <MeetingAppInner userId={userId} />
+      <MeetingAppInner userId={userId} meetingId={meetingId}/>
 	  </AspotWrapper>
 	)
 }

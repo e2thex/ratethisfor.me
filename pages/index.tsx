@@ -25,7 +25,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Rate {id ? id : 'this for me!'}!</title>
         <meta name="description" content={id ? `rate ${id}` : "A app that lets you quick request a group of people to rate something"} />
-        { id ? <meta property="og:image" content="/ratingbaseball.png" /> : <></> }
+        { id ? <></> : <meta property="og:image" content="/ratingbaseball.png" /> }
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

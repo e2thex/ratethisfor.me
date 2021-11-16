@@ -42,16 +42,16 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 		 <label htmlFor="score" className="sr-only">Meeting Score between 1 and 10</label>
 		 <input id="score" className ="mt-4 w-full" type ='range' max='10' min='1' step='1' list='tickmarks' onChange={v => setTempScore(v.target.value.toString())} defaultValue={parseInt(tempScore || score || '1')}/>
 			<datalist id="tickmarks" className="flex flex-row justify-between w-full text-center text-gray-600 mb-4">
-				<option value="1" label="1"></option>
-				<option value="2" label="2"></option>
-				<option value="3" label="3"></option>
-				<option value="4" label="4"></option>
-				<option value="5" label="5"></option>
-				<option value="6" label="6"></option>
-				<option value="7" label="7"></option>
-				<option value="8" label="8"></option>
-				<option value="9" label="9"></option>
-				<option value="10" label="10" className="-mr-2"></option>
+				<option value="1" label="1" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="2" label="2" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="3" label="3" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="4" label="4" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="5" label="5" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="6" label="6" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="7" label="7" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="8" label="8" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="9" label="9" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}}></option>
+				<option value="10" label="10" onClick={o => {document.getElementById('score').value=o.target.value.toString(); setTempScore(o.target.value.toString());}} className="-mr-2"></option>
 			</datalist>
 		<textarea 
 		  className = "max-w-full border w-full p-2 text-lg placeholder-gray-600 border-gray-600 " 

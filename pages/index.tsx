@@ -10,13 +10,13 @@ import { NextPage } from 'next';
 import ShareIcon from '../components/ShareIcon';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 
 const Home: NextPage = () => {
   ReactGA.initialize('G-HK7G752SEB');
   const router = useRouter();
   const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id;
-  ReactGA.pageview(id ? `/${id}` : '/');
+  ReactGA.send('pageview');
   const copyUrl = () => {
     copyToClipBoard(window.location.href)
     toast.success('Copy url to clipboard',{autoClose: 2000, hideProgressBar: true})

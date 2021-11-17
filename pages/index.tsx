@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ReactGA from 'react-ga';
 
 const Home: NextPage = () => {
-  ReactGA.initialize('UA-000000-01');
+  ReactGA.initialize('G-HK7G752SEB');
   const router = useRouter();
   const id = Array.isArray(router.query.id) ? router.query.id[0] : router.query.id;
   ReactGA.pageview(id ? `/${id}` : '/');

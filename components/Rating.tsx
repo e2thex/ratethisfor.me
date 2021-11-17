@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { HTMLProps, useState } from 'react';
 import 'rc-slider/assets/index.css';
 import { v4 } from 'uuid';
 import { mean, min, max } from 'lodash';
@@ -22,6 +22,11 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 	const [tempScore, setTempScore] = useState(score);
 	const node = useAspotContext();
 	const update = () => {
+		if (!tempName) {
+		  toast.error('Please Enter a Name.', {autoClose: 2000, hideProgressBar: true})
+      return;
+
+		}
 		if (tempName === name && tempScore === score && tempReason === reason) {
 		  toast.error('You Did not enter anything to set.', {autoClose: 2000, hideProgressBar: true})
       return;
@@ -30,6 +35,11 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
     if (tempScore) currentNode.s('score').is(tempScore);
     if (tempReason) currentNode.s('reason').is(tempReason);
 		toast.success('Set/Update Score! Thank you.', {autoClose: 2000, hideProgressBar: true})
+	}
+	const TickMark = (props:HTMLProps<HTMLOptionElement> ) => {
+		const { value, ...rest } = props;
+		const tick = value? value.toString() :''
+		return <option className = "w-4 cursor-pointer" value={tick} label={tick} onClick={e=> setTempScore(tick)} {...props}></option>
 	}
 	return (
 		<>
@@ -41,17 +51,8 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
      ></input>	
 		 <label htmlFor="score" className="sr-only">Meeting Score between 1 and 10</label>
 		 <input id="score" className ="mt-4 w-full cursor-pointer" type ='range' max='10' min='1' step='1' list='tickmarks' onChange={v => setTempScore(v.target.value.toString())} value ={parseInt(tempScore) || 1} defaultValue={parseInt(tempScore || score || '1')}/>
-			<datalist id="tickmarks" className="flex flex-row justify-between w-full text-center text-gray-600 mb-4 cursor-pointer">
-				<option value="1" label="1" onClick={e=> setTempScore("1")}></option>
-				<option value="2" label="2" onClick={e=> setTempScore("2")}></option> 
-				<option value="3" label="3" onClick={e=> setTempScore("3")}></option>  
-				<option value="4" label="4" onClick={e=> setTempScore("4")}></option> 
-				<option value="5" label="5" onClick={e=> setTempScore("5")}></option> 
-				<option value="6" label="6" onClick={e=> setTempScore("6")}></option> 
-				<option value="7" label="7" onClick={e=> setTempScore("7")}></option> 
-				<option value="8" label="8" onClick={e=> setTempScore("8")}></option> 
-				<option value="9" label="9" onClick={e=> setTempScore("9")}></option> 
-				<option value="10" label="10" onClick={e=> setTempScore("10")}></option>  
+			<datalist id="tickmarks" className="flex flex-row justify-between w-full text-center text-gray-600 mb-4">
+				{Array.from(Array(10).keys()).map(i => <TickMark key={i} value={i+1} />)}
 			</datalist>
 		<textarea 
 		  className = "max-w-full border w-full p-2 text-lg placeholder-gray-600 border-gray-600 " 
@@ -60,7 +61,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 			defaultValue={reason}
 			></textarea>
     <button 
-			className={`w-full border border-gray-600 p-2 text-lg  ${tempName !== name || tempScore !== score || tempReason !== reason ? 'bg-blue-300 rounded hover:bg-blue-500 hover:text-white' : ''}`}
+			className={`w-full border border-gray-600 p-2 text-lg  ${tempName && (tempName !== name || tempScore !== score || tempReason !== reason) ? 'bg-blue-300 rounded hover:bg-blue-500 hover:text-white' : ''}`}
 			onClick={update}
 			>{name ? 'Resubmit' : 'Submit and See Results'}</button>
 		</>

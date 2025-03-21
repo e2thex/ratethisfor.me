@@ -55,7 +55,7 @@ const UserForm = (props:{currentNode:PredicateNode<StoreNode>}) => {
 			</datalist>
 		<textarea 
 		  className = "max-w-full border w-full p-2 text-lg placeholder-gray-600 border-gray-600 " 
-			placeholder ="Reason for Score" 
+			placeholder ="What was most useful for you?" 
 			onChange={e => setTempReason(e.target.value)}
 			defaultValue={reason}
 			></textarea>
@@ -111,7 +111,7 @@ const Results = (props:{data:PredicateNode<StoreNode>[], deleteItem:(i:string) =
 	      <tr>
           <th className="w-1/6">Name</th>
           <th className="w-1/6">Score</th>
-          <th className="w-7/12">Reason</th>
+          <th className="w-7/12">Most Useful</th>
           <th className="w-1/12"></th>
 	      </tr>
 	    </thead>
